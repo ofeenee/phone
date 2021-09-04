@@ -14,7 +14,7 @@ class Phone {
 
     }
     catch (error) {
-      console.log(error.message);
+      throw error;
     }
   }
 
@@ -40,7 +40,7 @@ class Phone {
       }
     }
     catch (error) {
-      console.log(error.message);
+      throw error;
     }
   }
 
@@ -49,7 +49,7 @@ class Phone {
       return this.#phone;
     }
     catch (error) {
-      console.log(error.message);
+      throw error;
     }
   }
 }
