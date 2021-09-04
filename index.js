@@ -1,4 +1,6 @@
-import isMobilePhone from 'validator/lib/isMobilePhone.js';
+import validator from 'validator';
+const {isMobilePhone} = validator;
+
 
 class Phone {
   #phone;
@@ -53,5 +55,6 @@ class Phone {
     }
   }
 }
+
 
 export default Phone;

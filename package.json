@@ -1,7 +1,7 @@
 {
   "name": "@ofeenee/phone",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A class for validating, verifying, and managing a mobile phone number... and more.",
   "main": "index.js",
   "scripts": {
