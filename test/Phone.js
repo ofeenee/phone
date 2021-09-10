@@ -1,3 +1,4 @@
+
 import { assert } from 'chai';
 import Phone from '../Phone.js';
 import validator from 'validator';
@@ -47,9 +48,14 @@ describe(`new Phone()`, function () {
   it(`get() value of phone instance to return ${validPhoneNumber}`, function () {
     assert.strictEqual(phone.get(), validPhoneNumber);
   });
+
+
+
 });
 
 if (phoneToTest) {
+
+
   describe(`Testing passed phone address: ${phoneToTest}`, function () {
     const phone = new Phone();
     const validatePhone = validator.isMobilePhone(phoneToTest, 'any', {strictMode: true});
@@ -75,6 +81,51 @@ if (phoneToTest) {
       it(`get() instance method to return ${phoneToTest}`, function () {
         assert.strictEqual(phone.get(), phoneToTest);
       });
+
+      if (process.env.code) {
+        it(`confirm verification phone to ${phoneToTest}`, async function () {
+          try {
+            const verification = await phone.confirmPhoneVerification(process.env.code);
+            assert.isDefined(verification);
+            assert.strictEqual(verification.status, 'approved');
+            assert.strictEqual(verification.to, phone.get());
+            assert.isTrue(verification.valid);
+            assert.isTrue(phone.isVerified());
+
+          } catch (error) {
+            assert.fail(error.message);
+          }
+        });
+      }
+      else {
+        it(`send verification phone to ${phoneToTest}`, async function () {
+          try {
+            const verification = await phone.sendSMSPhoneVerification();
+
+            // const {sid, status, valid, sendCodeAttempts} = verification;
+            // console.log({sid, status, valid, sendCodeAttempts});
+
+            assert.isDefined(verification);
+            assert.containsAllKeys(verification, [
+              'sid',
+              'serviceSid',
+              'accountSid',
+              'to',
+              'channel',
+              'status',
+              'valid',
+            ]);
+            assert.strictEqual(verification.status, 'pending');
+            assert.strictEqual(verification.to, phone.get());
+            assert.isFalse(verification.valid);
+            assert.isFalse(phone.isVerified());
+
+          } catch (error) {
+            assert.fail(error.message);
+          }
+        });
+      }
+
       it(`set(${validPhoneNumber}) of Phone instance to update (successfully)`, function () {
         assert.strictEqual(phone.set(validPhoneNumber), validPhoneNumber);
       });
