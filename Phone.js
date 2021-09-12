@@ -88,13 +88,6 @@ function Phone(verified = false) {
         value: validatePhone,
         enumerable: true
       },
-      isVerified: {
-        value: () => {
-          if (typeof this.verified === 'boolean') return this.verified;
-          else return null;
-        },
-        enumerable: true
-      },
       verification: {
         value: Object.defineProperties({}, {
           sendCodeSMS: {
@@ -159,6 +152,13 @@ function Phone(verified = false) {
             enumerable: true
           }
         })
+      },
+      isVerified: {
+        value: () => {
+          if (typeof this.verified === 'boolean') return this.verified;
+          else return null;
+        },
+        enumerable: true
       }
     });
   }
