@@ -39,37 +39,37 @@ describe(`new Phone()`, function () {
     }
   });
 
-  it(`the property phoneNumber of the Phone instance "phone" should return null`, function () {
+  it(`phone.get() should return null`, function () {
     try {
-      assert.isNull(phone.phoneNumber);
+      assert.isNull(phone.get());
     }
     catch (error) {
       assert.fail(error.message);
     }
   });
 
-  it(`assign (${validPhoneNumber}) to phoneNumber property of the Phone instance "phone" (successfully)`, function () {
+  it(`phone.set(${validPhoneNumber}) (valid - successfully)`, function () {
     try {
-      phone.phoneNumber = validPhoneNumber;
-      assert.equal(phone.phoneNumber, validPhoneNumber);
+      assert.equal(phone.set(validPhoneNumber), validPhoneNumber);
     }
     catch (error) {
       assert.fail(error.message);
     }
   });
 
-  it(`assign (${invalidPhoneNumber}) to phoneNumber property of the Phone instance "phone" (throws error)`, function () {
+  it(`phone.set(${invalidPhoneNumber}) (invalid - throws error)`, function () {
     try {
-      phone.phoneNumber = invalidPhoneNumber;
+      phone.set(invalidPhoneNumber);
       assert.fail('phone value is invalid, therefore should have thrown an error.');
     } catch (error) {
       assert.instanceOf(error, Error);
       assert.strictEqual(error.message, 'phone value is invalid.');
     }
   });
-  it(`phoneNumber property of the Phone instance "phone" should return ${validPhoneNumber}`, function () {
+
+  it(`phone.get() should return ${validPhoneNumber}`, function () {
     try {
-      assert.strictEqual(phone.phoneNumber, validPhoneNumber);
+      assert.strictEqual(phone.get(), validPhoneNumber);
     }
     catch (error) {
       assert.fail(error.message);
@@ -105,46 +105,73 @@ if (phoneToTest) {
           assert.fail(error.message);
         }
       });
-      // try to set the address value to the Phone instance
-      it(`assign (${phoneToTest}) to phoneNumber property`, function () {
+      it(`phone.get() should return null`, function () {
         try {
-          phone.phoneNumber = phoneToTest;
-          assert.strictEqual(phone.phoneNumber, phoneToTest);
+          assert.isNull(phone.get());
+        }
+        catch (error) {
+          assert.fail(error.message);
+        }
+      });
+
+      // try to set the address value to the Phone instance
+      it(`phone.set(${phoneToTest})`, function () {
+        try {
+          assert.strictEqual(phone.set(phoneToTest), phoneToTest);
         }
         catch (error) {
           assert.fail(error.message);
         }
       });
       // try to get the address value from the instance phone
-      it(`phoneNumber property should return ${phoneToTest}`, function () {
+      it(`phone.get() property should return ${phoneToTest}`, function () {
         try {
-          assert.strictEqual(phone.phoneNumber, phoneToTest);
+          assert.strictEqual(phone.get(), phoneToTest);
         }
         catch (error) {
           assert.fail(error.message);
         }
       });
 
-
       if (process.env.code) {
-        it(`confirm verification phone to ${phoneToTest}`, async function () {
+        it(`confirm verification phone to ${phoneToTest} (invalid)`, async function () {
           try {
-            const verification = await phone.confirm(process.env.code);
+            const verification = await phone.verification.confirmCode('123456');
             assert.isDefined(verification);
-            assert.strictEqual(verification.status, 'approved');
-            assert.strictEqual(verification.to, phone.phoneNumber);
-            assert.isTrue(verification.valid);
-            assert.isTrue(phone.verified);
+            assert.strictEqual(verification.status, 'pending');
+            assert.strictEqual(verification.to, phone.get());
+            assert.isFalse(verification.valid);
+            assert.isFalse(phone.isVerified());
 
           } catch (error) {
             assert.fail(error.message);
           }
         }).timeout(10000);
+        it(`confirm verification phone to ${phoneToTest}`, async function () {
+          try {
+            const verification = await phone.verification.confirmCode(process.env.code);
+            assert.isDefined(verification);
+            assert.strictEqual(verification.status, 'approved');
+            assert.strictEqual(verification.to, phone.get());
+            assert.isTrue(verification.valid);
+
+          } catch (error) {
+            assert.fail(error.message);
+          }
+        }).timeout(10000);
+        it(`phone.isVerified() should return true after confirmation`, function() {
+          try {
+            assert.isTrue(phone.isVerified());
+          }
+          catch (error) {
+            assert.fail(error.message);
+          }
+        });
       }
       else {
-        it(`send verification phone to ${phoneToTest}`, async function () {
+        it(`phone.verification.sendCodeSMS() to ${phoneToTest}`, async function () {
           try {
-            const verification = await phone.verifySMS();
+            const verification = await phone.verification.sendCodeSMS();
 
             // const {sid, status, valid, sendCodeAttempts} = verification;
             // console.log({sid, status, valid, sendCodeAttempts});
@@ -160,9 +187,9 @@ if (phoneToTest) {
               'valid',
             ]);
             assert.strictEqual(verification.status, 'pending');
-            assert.strictEqual(verification.to, phone.phoneNumber);
+            assert.strictEqual(verification.to, phone.get());
             assert.isFalse(verification.valid);
-            assert.isFalse(phone.verified);
+            assert.isFalse(phone.isVerified());
 
           } catch (error) {
             assert.fail(error.message);
@@ -170,19 +197,18 @@ if (phoneToTest) {
         }).timeout(10000);
       }
 
-      it(`assign (${validPhoneNumber}) to phoneNumber property to update (successfully)`, function () {
+      it(`phone.set(${validPhoneNumber}) to update (successfully)`, function () {
         try {
-          phone.phoneNumber = validPhoneNumber;
-          assert.strictEqual(phone.phoneNumber, validPhoneNumber);
+          assert.strictEqual(phone.set(validPhoneNumber), validPhoneNumber);
         }
         catch (error) {
           assert.fail(error.message);
         }
       });
 
-      it(`assign (${invalidPhoneNumber}) to phoneNumber property to update (throws error)`, function () {
+      it(`phone.set(${invalidPhoneNumber}) to update (throws error)`, function () {
         try {
-          phone.phoneNumber = invalidPhoneNumber;
+          phone.set(invalidPhoneNumber);
           assert.fail('phone value is invalid, therefore should have thrown an error.');
         }
         catch (error) {
@@ -191,9 +217,9 @@ if (phoneToTest) {
         }
       });
 
-      it(`retrieve (${validPhoneNumber}) from the phoneNumber property (last valid assignment)`, function () {
+      it(`phone.get() should return ${validPhoneNumber} (last valid assignment)`, function () {
         try {
-          assert.strictEqual(phone.phoneNumber, validPhoneNumber);
+          assert.strictEqual(phone.get(), validPhoneNumber);
         }
         catch (error) {
           assert.fail(error.message);
@@ -211,9 +237,9 @@ if (phoneToTest) {
         }
       });
 
-      it(`assign (${phoneToTest}) to property phoneNumber property should fail and throw an error`, function () {
+      it(`phone.set(${phoneToTest}) should fail and throw an error (invalid)`, function () {
         try {
-          phone.phoneNumber = phoneToTest;
+          phone.set(phoneToTest);
           assert.fail('phone value is invalid, therefore should have thrown an error.');
         }
         catch (error) {
@@ -222,8 +248,8 @@ if (phoneToTest) {
         }
       });
 
-      it(`phoneNumber property should return null`, function () {
-        assert.isNull(phone.phoneNumber);
+      it(`phone.get() property should return null`, function () {
+        assert.isNull(phone.get());
       });
     }
   });
