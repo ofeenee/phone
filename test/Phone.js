@@ -141,7 +141,6 @@ if (phoneToTest) {
             assert.strictEqual(verification.status, 'pending');
             assert.strictEqual(verification.to, phone.get());
             assert.isFalse(verification.valid);
-            assert.isFalse(phone.isVerified());
 
           } catch (error) {
             assert.fail(error.message);
@@ -159,22 +158,11 @@ if (phoneToTest) {
             assert.fail(error.message);
           }
         }).timeout(10000);
-        it(`phone.isVerified() should return true after confirmation`, function() {
-          try {
-            assert.isTrue(phone.isVerified());
-          }
-          catch (error) {
-            assert.fail(error.message);
-          }
-        });
       }
       else {
         it(`phone.verification.sendCodeSMS() to ${phoneToTest}`, async function () {
           try {
             const verification = await phone.verification.sendCodeSMS();
-
-            // const {sid, status, valid, sendCodeAttempts} = verification;
-            // console.log({sid, status, valid, sendCodeAttempts});
 
             assert.isDefined(verification);
             assert.containsAllKeys(verification, [
@@ -189,7 +177,6 @@ if (phoneToTest) {
             assert.strictEqual(verification.status, 'pending');
             assert.strictEqual(verification.to, phone.get());
             assert.isFalse(verification.valid);
-            assert.isFalse(phone.isVerified());
 
           } catch (error) {
             assert.fail(error.message);
