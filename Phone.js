@@ -3,7 +3,7 @@ const { isMobilePhone } = validator;
 
 function validatePhone(string) {
   try {
-    if (typeof string !== 'string' || !string) throw new Error('value is invalid.');
+    if (typeof string !== 'string' || !string) return false;
     return isMobilePhone(string, 'any', { strictMode: true });
   }
   catch (error) {
@@ -23,17 +23,13 @@ const {
 import twilio from 'twilio';
 const client = twilio(accountSid, authToken);
 
-function Phone(verified = false) {
+function Phone(phone = null) {
   try {
-    if (new.target === undefined) return new Phone(verified);
+    if (new.target === undefined) return new Phone(phone);
 
     return Object.defineProperties(this, {
       phone: {
-        value: null,
-        configurable: true
-      },
-      verified: {
-        value: verified,
+        value: validatePhone(phone) ? phone : null,
         configurable: true
       },
       set: {
@@ -46,22 +42,6 @@ function Phone(verified = false) {
               return this.phone;
             }
             else {
-              // if set() was the first assignment (ie from database);
-              // we'd want to set verified as it is fetched from the db
-              // otherwise, any other phone change should set verified
-              // back to false to require a re-verification
-              if (this.get() === null) {
-                Object.defineProperty(this, 'verified', {
-                  value: verified,
-                  configurable: true
-                });
-              }
-              else {
-                Object.defineProperty(this, 'verified', {
-                  value: false,
-                  configurable: true
-                });
-              }
 
               Object.defineProperty(this, 'phone', {
                 value: string,
@@ -135,14 +115,6 @@ function Phone(verified = false) {
                   .verificationChecks
                   .create({ to: this.phone, code });
 
-                const { valid } = verification;
-                if (valid) {
-                  Object.defineProperty(this, 'verified', {
-                    value: true,
-                    configurable: true
-                  });
-
-                };
                 return verification;
               }
               catch (error) {
@@ -153,13 +125,6 @@ function Phone(verified = false) {
           }
         })
       },
-      isVerified: {
-        value: () => {
-          if (typeof this.verified === 'boolean') return this.verified;
-          else return null;
-        },
-        enumerable: true
-      }
     });
   }
   catch (error) {
