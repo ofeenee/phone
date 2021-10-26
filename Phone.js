@@ -64,10 +64,6 @@ function Phone(phone = null) {
         },
         enumerable: true
       },
-      validate: {
-        value: validatePhone,
-        enumerable: true
-      },
       verification: {
         value: Object.defineProperties({}, {
           sendCodeSMS: {
@@ -131,5 +127,12 @@ function Phone(phone = null) {
     throw error;
   }
 }
+
+Object.defineProperties(Phone, {
+  validate: {
+    value: validatePhone,
+    enumerable: true
+  },
+});
 
 export default Phone;
