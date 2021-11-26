@@ -27,6 +27,11 @@ function Phone(phone = null) {
   try {
     if (new.target === undefined) return new Phone(phone);
 
+    if (phone) {
+      const valid = validatePhone(phone);
+      if (!valid) throw new Error('Invalid phone number');
+    }
+
     return Object.defineProperties(this, {
       phone: {
         value: validatePhone(phone) ? phone : null,
